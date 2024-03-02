@@ -14,7 +14,8 @@
   "author": "Nikhil Kumar",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
   },
   "dependencies": {
     "dotenv": "^16.4.5"
