@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import {Link} from "react-router-dom"
+import toast from "react-hot-toast";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -12,15 +13,24 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
-      const res = await fetch('http://localhost:8000/api/v1/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      console.log(data);
+    
+      try {
+        const res = await fetch('http://localhost:8000/api/v1/users/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.success) {
+          alert("Register successfully");
+          navigate("/");
+        }
+      } catch (error) {
+        
+      }
   };
   
   return (
