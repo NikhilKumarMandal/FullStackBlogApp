@@ -148,7 +148,7 @@ const getBlogById = asyncHandler(async(req,res) => {
 })
 
 const getAllBlog = asyncHandler(async(req,res) => {
-    const { query,} = req.query;
+    const { query} = req.query;
 
     const blogs = await Blog.aggregate([
     {
