@@ -1,43 +1,47 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Card from "../components/Card/Card.jsx"
+import React, { useState, useEffect } from 'react';
+import Card from '../components/Card/Card.jsx'; // Import your Card component
 
-const Blogs = () => {
+function Blog() {
   const [blogs, setBlogs] = useState([]);
+    useEffect(() => {
+      const getAccessToken = async () => {
+          try {
+              const persistedStateString = localStorage.getItem('persist:root');
+              const persistedState = JSON.parse(persistedStateString);
+              const accessToken = JSON.parse(persistedState.user).currentUser.data.accessToken;
+              const res = await fetch('http://localhost:8000/api/v1/blogs/', {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${accessToken}`
+                  }
+              });
 
-  // Fetch blogs from the API
-  const getAllBlogs = async () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem('currentUser'));
-      const accessToken = userData?.data?.accessToken;
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/blogs/",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      if (response.data?.success) {
-        setBlogs(response.data?.blogs);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+              if (res.ok) {
+                  const data = await res.json();
+                  setBlogs(data); 
+              } else {
+                  throw new Error('Failed to fetch data');
+              }
+          } catch (error) {
+              console.log(error);
+          }
+      };
+      getAccessToken();
+  }, []); 
 
-  useEffect(() => {
-    getAllBlogs();
-  }, []);
 
   return (
-    <div>
-      <h1>Blogs</h1>
-      <ul>
-        <Card/>
-      </ul>
+    <div className='w-full py-8'>
+      <div className='flex flex-wrap'>
+        
+          <div  className='p-2 w-1/4'>
+            <Card  /> 
+          </div>
+        
+      </div>
     </div>
   );
-};
+}
 
-export default Blogs;
+export default Blog;
