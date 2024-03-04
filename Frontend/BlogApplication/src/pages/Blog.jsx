@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../components/Card/Card.jsx'; // Import your Card component
+import Card from '../components/Card/Card.jsx';
 
 function Blog() {
   const [blogs, setBlogs] = useState([]);
@@ -18,8 +18,10 @@ function Blog() {
               });
 
               if (res.ok) {
+                console.log("hello world");
                   const data = await res.json();
-                  setBlogs(data); 
+                  setBlogs(data.data); 
+                  console.log("Data is ",typeof data);
               } else {
                   throw new Error('Failed to fetch data');
               }
@@ -28,18 +30,25 @@ function Blog() {
           }
       };
       getAccessToken();
+      console.log("hello",typeof blogs);
   }, []); 
 
+  
 
-  return (
-    <div className='w-full py-8'>
-      <div className='flex flex-wrap'>
-        
-          <div  className='p-2 w-1/4'>
-            <Card  /> 
-          </div>
-        
-      </div>
+
+return (
+<div>
+    
+  {blogs && blogs.map(blog => (
+        <Card
+        key={blog.id}
+        title = {blog.title}
+        content = {blog.content}
+        thumbnail = {blog.thumbnail}
+        author = {blog.author.username}
+        />
+  ))}
+
     </div>
   );
 }

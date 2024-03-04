@@ -48,7 +48,7 @@ export default function SignIn() {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
           type='email'
-          placeholder='Email'
+          placeholder='Email or Username'
           id='email'
           className='bg-slate-100 p-3 rounded-lg'
           onChange={handleChange}
