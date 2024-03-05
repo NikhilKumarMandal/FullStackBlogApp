@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import Layout from './Layout.jsx'
-import Hero from "./pages/Hero.jsx"
 import SignIn from './pages/SignIn.jsx'
 import { Provider } from 'react-redux'
 import Login from './pages/Login.jsx'
@@ -14,8 +13,7 @@ import { Toaster } from "react-hot-toast";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout />}>
-    <Route path='' element={<Hero/>} />
-    <Route path='/allblog' element={<Blog/>} />
+    <Route path='' element={<Blog/>} />
     <Route path='/register' element={<SignIn/>} />
     <Route path='/LogIn' element={<Login/>} />
        

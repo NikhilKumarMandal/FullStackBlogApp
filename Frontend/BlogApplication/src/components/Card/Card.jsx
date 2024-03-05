@@ -1,7 +1,7 @@
 import React from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
-function Card({title,content,thumbnail,author}) {
+function Card({title,content,thumbnail,username}) {
   return (
     <div className="w-[300px] rounded-md border">
       <img  src={thumbnail} 
@@ -13,7 +13,7 @@ function Card({title,content,thumbnail,author}) {
           {title} &nbsp; <ArrowUpRight className="h-4 w-4" />
         </h1>
         <h3 className="mt-3 text-sm text-gray-900">
-         {author}
+        Author: {username}
         </h3>
         <button
           type="button"

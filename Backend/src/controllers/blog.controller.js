@@ -147,38 +147,57 @@ const getBlogById = asyncHandler(async(req,res) => {
         );
 })
 
-const getAllBlog = asyncHandler(async(req,res) => {
-    const { query} = req.query;
 
-    const blogs = await Blog.aggregate([
-    {
-    $match: query?.length > 0
-        ? 
+
+const getAllBlog = asyncHandler(async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        let blogs = await Blog.aggregate([
             {
-            title: {
-                $regex: query.trim(),
-                $options: "i",
+                $match: query?.length > 0
+                    ? {
+                        title: {
+                            $regex: query.trim(),
+                            $options: "i",
+                        },
+                    }
+                    : {},
             },
-            }
-        : {},
-    },
-    {
-    $sort: {
-        updatedAt: -1,
-    },
-    },
-]);
+            {
+                $sort: {
+                    updatedAt: -1,
+                },
+            },
+            {
+                $lookup: {
+                    from: "users", // Assuming your users collection name is 'users'
+                    localField: "author",
+                    foreignField: "_id",
+                    as: "authorInfo",
+                },
+            },
+            {
+                $addFields: {
+                    author: { $arrayElemAt: ["$authorInfo.username", 0] },
+                },
+            },
+            {
+                $project: {
+                    authorInfo: 0, // Exclude authorInfo field
+                },
+            },
+        ]);
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            blogs,
-            "blogs fetched successfully"
-            )
-        );
-})
+        res.status(200).json(new ApiResponse(200,blogs,"Blogs fetched successfully"));
+    } catch (error) {
+        console.error(error);
+        throw new ApiError(500," Something went wrong while fetched the data ")
+    }
+});
+
+
+
 
 export {
     createBlog,
