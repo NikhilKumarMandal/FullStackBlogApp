@@ -20,7 +20,6 @@ const generateAccessAndRefereshTokens = async(userId) =>{
         throw new ApiError(500, "Something went wrong while generating referesh and access token")
     }
 }
-
 // TEST CASE PASS
 const registerUser = asyncHandler( async (req, res) => {
      const {fullname,username,email,password} = req.body
@@ -39,10 +38,26 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(409,"User with email or username already exists")
     }
 
+    let avatarLocalPath;
+    if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
+        avatarLocalPath = req.files.avatar[0].path
+    }
+    
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Avatar file is required")
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if (!avatar) {
+        throw new ApiError(400, "Avatar file is required")
+    }
+
     const user = await User.create({
         fullname,
         email,
         password,
+        avatar: avatar?.url,
         username: username.toLowerCase()
     })
 
@@ -259,6 +274,32 @@ const updateAccountDetails = asyncHandler(async(req,res) => {
 
 })
 
+const handleSocialLogin = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user?._id);
+  
+    if (!user) {
+      throw new ApiError(404, "User does not exist");
+    }
+  
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
+    );
+  
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    };
+  
+    return res
+      .status(301)
+      .cookie("accessToken", accessToken, options) // set the access token in the cookie
+      .cookie("refreshToken", refreshToken, options) // set the refresh token in the cookie
+      .redirect(
+        // redirect user to the frontend with access and refresh token in case user is not using cookies
+        `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+      );
+  });
+  
 
 
 
@@ -270,4 +311,5 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    handleSocialLogin
  }
