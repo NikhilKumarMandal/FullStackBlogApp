@@ -2,7 +2,7 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import session from "express-session";
-import passport from "passport";
+
 
 const app = express()
 
@@ -16,15 +16,8 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
-app.use(
-    session({
-      secret: process.env.EXPRESS_SESSION_SECRET,
-      resave: true,
-      saveUninitialized: true,
-    })
-)
-app.use(passport.initialize());
-app.use(passport.session());
+
+
 
 //routes import
 import userRouter from "./routes/user.routes.js"
