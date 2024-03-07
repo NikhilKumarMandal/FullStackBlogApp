@@ -7,6 +7,9 @@ import Layout from './Layout.jsx'
 import SingUp from './pages/SingUp.jsx'
 import SingIn from './pages/SingIn.jsx'
 import Home from './pages/Home.jsx'
+import { store, persistor } from './redux/store.js';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
 
 const router = createBrowserRouter(
@@ -15,13 +18,14 @@ const router = createBrowserRouter(
     <Route path='' element={<Home/>} />
     <Route path='/signUp' element={<SingUp/>} />
     <Route path='/signIn' element={<SingIn/>} />
-     
     </Route>
   )
 )
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+  <PersistGate persistor={persistor}>
+  <Provider store={store}>
+  <RouterProvider router={router} />
+  </Provider>
+</PersistGate>
 )

@@ -2,8 +2,11 @@ import React from 'react'
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { useSelector } from 'react-redux'
 
 function Header() {
+  const path = useLocation().pathname;
+  const {currentUser} = useSelector(state => state.user)
   return (
     <Navbar className='border-b-2'>
       <Link
@@ -38,16 +41,18 @@ function Header() {
           
         </Button>
         
+        {currentUser ? (
           <Dropdown
             arrowIcon={false}
             inline
             label={
-              <Avatar alt='user'  rounded />
+              <Avatar alt='user' img={currentUser.profilePicture} rounded />
             }
           >
             <Dropdown.Header>
-              <span className='block text-sm'>@</span>
+              <span className='block text-sm'>@{currentUser.username}</span>
               <span className='block text-sm font-medium truncate'>
+                {currentUser.email}
               </span>
             </Dropdown.Header>
             <Link to={'/dashboard?tab=profile'}>
@@ -56,13 +61,13 @@ function Header() {
             <Dropdown.Divider />
             <Dropdown.Item >Sign out</Dropdown.Item>
           </Dropdown>
-
+        ) : (
           <Link to='/signIn'>
             <Button gradientDuoTone='purpleToBlue' outline>
               Sign In
             </Button>
           </Link>
-
+        )}
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
