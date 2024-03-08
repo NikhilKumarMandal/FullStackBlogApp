@@ -259,35 +259,81 @@ const updateAccountDetails = asyncHandler(async(req,res) => {
 
 })
 
-const handleSocialLogin = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user?._id);
-  
-    if (!user) {
-      throw new ApiError(404, "User does not exist");
-    }
-  
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-      user._id
-    );
-  
-    const options = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    };
-  
+const googleLogin = asyncHandler(async(req,res,next) => {
+    const { email, name, googlePhotoUrl,fullname } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if (user) {
+        const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+        const { password, ...rest } = user._doc;
+
+        const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+        const options = {
+        httpOnly: true,
+        secure: true
+        }
+
     return res
-      .status(301)
-      .cookie("accessToken", accessToken, options) // set the access token in the cookie
-      .cookie("refreshToken", refreshToken, options) // set the refresh token in the cookie
-      .redirect(
-        // redirect user to the frontend with access and refresh token in case user is not using cookies
-        `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
-      );
-  });
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200, 
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "User logged In Successfully"
+        )
+    )
+      } else {
+        const generatedPassword =
+          Math.random().toString(36).slice(-8) +
+          Math.random().toString(36).slice(-8);
+       
+        const newUser = await User.create({
+          username:
+            name.toLowerCase().split(' ').join('') +
+            Math.random().toString(9).slice(-4),
+          email,
+          fullname,
+          password: generatedPassword,
+          avatar: googlePhotoUrl,
+        });
+        await newUser.save();
+
+   const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(newUser._id)
+
+   const { password, ...rest } = newUser._doc;
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200, 
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "User logged In Successfully"
+        )
+    )
+      }
+    } catch (error) {
+      next(error);
+    }
+
+})
   
-
-
-
 export {
     registerUser,
     loginUser,
@@ -296,5 +342,5 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
-    handleSocialLogin
+    googleLogin
  }
