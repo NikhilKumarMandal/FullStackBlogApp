@@ -190,7 +190,21 @@ const getAllBlog = asyncHandler(async (req, res) => {
             },
         ]);
 
-        res.status(200).json(new ApiResponse(200,blogs,"Blogs fetched successfully"));
+        const totalPosts = await Blog.countDocuments();
+
+        const now = new Date();
+    
+        const oneMonthAgo = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          now.getDate()
+        );
+    
+        const lastMonthPosts = await Blog.countDocuments({
+          createdAt: { $gte: oneMonthAgo },
+        });
+
+        res.status(200).json(new ApiResponse(200,{blogs,totalPosts,lastMonthPosts},"Blogs fetched successfully"));
     } catch (error) {
         console.error(error);
         throw new ApiError(500," Something went wrong while fetched the data ")
