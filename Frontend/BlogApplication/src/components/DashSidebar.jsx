@@ -28,15 +28,28 @@ export default function DashSidebar() {
     <Sidebar className='w-ull md:w-56'>
     <Sidebar.Items>
       <Sidebar.ItemGroup>
-        <Link to= '/dashboard?tab=profile'>
-          <Sidebar.Item 
-          active= {tab == 'profile'}
-          icon={HiUser}
-          label = {'User'}
-          labelColor = 'dark'
-          >
-            Profile
-          </Sidebar.Item>
+      <Link to='/dashboard?tab=profile'>
+            <Sidebar.Item
+              active={tab === 'profile'}
+              icon={HiUser}
+              label={currentUser.data.user.isAdmin ? 'Admin' : 'User'}
+              labelColor='dark'
+              as='div'
+            >
+              Profile
+            </Sidebar.Item>
+          </Link>
+          {currentUser.data.user.isAdmin && (
+            <Link to='/dashboard?tab=posts'>
+              <Sidebar.Item
+                active={tab === 'posts'}
+                icon={HiDocumentText}
+                as='div'
+              >
+                Posts
+              </Sidebar.Item>
+            </Link>
+          )}
           <Sidebar.Item 
           active
           icon={HiArrowSmRight}
@@ -44,7 +57,7 @@ export default function DashSidebar() {
           >
             Sign Out
           </Sidebar.Item>
-        </Link>
+        
       </Sidebar.ItemGroup>
     </Sidebar.Items>
 

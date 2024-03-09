@@ -59,6 +59,7 @@ function SingUp() {
 
         <div className='flex-1'>
           <form className='flex flex-col gap-4' onSubmit={handleSubmit} >
+            
             <div>
               <Label value='Your username' />
               <TextInput

@@ -29,13 +29,14 @@ const createBlog = asyncHandler(async(req,res) => {
     if (!thumbnail) {
         throw new ApiError(400, "Thumbnail file is required")
     }
-
+    console.log(thumbnail?.url);
     const blog = await Blog.create({
         title,
         content,
         thumbnail: thumbnail?.url,
         author: req.user?._id
     })
+
 
     if (!blog) {
         throw new ApiError(500,"Something went wrong while making your blog")
