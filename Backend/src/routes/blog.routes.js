@@ -4,7 +4,8 @@ import {
    updateBlog,
    deleteBlog,
    getAllBlog,
-   getBlogById
+   getBlogById,
+   getposts
 } from "../controllers/blog.controller.js";
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 import {upload} from "../middlewares/multer.middleware.js"
@@ -24,6 +25,10 @@ router
         ]),
         createBlog
     );
+
+router
+    .route('/getposts')
+    .get(getposts)
 
 router
     .route("/:BlogId")
