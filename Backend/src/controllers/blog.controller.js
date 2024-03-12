@@ -125,27 +125,14 @@ const deleteBlog = asyncHandler(async(req,res) => {
 })
 
 const getBlogById = asyncHandler(async(req,res) => {
-    const { blogId } = req.params
-
-    if (!blogId || !isValidObjectId(blogId)) {
-        throw new ApiError(400, "Invalid Blog id");
-    }
-
-    const blog = await Blog.findById(blogId)
-
-    if (!blog) {
-        throw new ApiError(404, "Blog does not exist");
-    }
-
-    return res
-        .status(200)
-        .json(
-        new ApiResponse(
-            200,
-            blog,
-            "Blog fetched successfully"
-            )
-        );
+    const { blogId } = req.params;
+  const blog = await Blog.findById(blogId);
+  if (!blog) {
+    throw new ApiError(404, "Blog does not exist");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, blog, "Blog fetched successfully"));
 })
 
 const getAllBlog = asyncHandler(async (req, res) => {
@@ -217,7 +204,7 @@ const getAllBlog = asyncHandler(async (req, res) => {
       const posts = await Blog.find({
         ...(req.query.userId && { userId: req.query.userId }),
         ...(req.query.category && { category: req.query.category }),
-        ...(req.query.postId && { _id: req.query.postId }),
+        ...(req.query.blogId && { _id: req.query.blogId }),
         ...(req.query.searchTerm && {
           $or: [
             { title: { $regex: req.query.searchTerm, $options: 'i' } },
